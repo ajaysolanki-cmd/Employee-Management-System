@@ -1,0 +1,817 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Employee Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .employee-page {
+        padding: 5px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        color: #172554;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .page-header p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .btn-modern {
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .filter-card,
+    .employee-card {
+        border: none;
+        border-radius: 14px;
+        background: white;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .filter-card .card-body {
+        padding: 25px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        color: #334155;
+        font-weight: 600;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 8px;
+        padding: 10px 12px;
+        border-color: #e2e8f0;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    .employee-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 25px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .employee-card .card-header h5 {
+        color: #172554;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .employee-card .card-body {
+        padding: 20px 25px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 15px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        color: #334155;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .employee-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #dbeafe;
+        color: #2563eb;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .department-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .salary-text {
+        color: #15803d;
+        font-weight: 700;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 7px;
+        margin: 2px;
+    }
+
+    .pagination .page-link {
+        border-radius: 7px;
+        margin: 0 3px;
+        color: #2563eb;
+        border-color: #e2e8f0;
+    }
+
+    .pagination .active .page-link {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white;
+    }
+
+    .empty-state {
+        padding: 45px 15px !important;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 45px;
+        color: #94a3b8;
+    }
+
+    /* TABLET RESPONSIVENESS */
+    @media (max-width: 992px) {
+        .filter-card .card-body {
+            padding: 20px;
+        }
+
+        .employee-card .card-header {
+            padding: 18px 20px;
+        }
+
+        .employee-card .card-body {
+            padding: 18px 20px;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 12px;
+        }
+    }
+
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 768px) {
+        .employee-page {
+            padding: 2px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+
+        .page-header h2 {
+            font-size: 21px;
+            line-height: 1.35;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .page-header .header-buttons {
+            width: 100%;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px !important;
+        }
+
+        .btn-modern {
+            padding: 10px 9px;
+            font-size: 12px;
+            white-space: normal;
+        }
+
+        .filter-card,
+        .employee-card {
+            margin-bottom: 18px;
+            border-radius: 11px;
+        }
+
+        .filter-card .card-body,
+        .employee-card .card-body {
+            padding: 14px;
+        }
+
+        .filter-card h6 {
+            font-size: 14px;
+            margin-bottom: 16px !important;
+        }
+
+        .form-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 42px;
+            font-size: 14px;
+        }
+
+        .filter-card .row > div {
+            width: 100%;
+        }
+
+        .filter-card .col-12.d-flex {
+            margin-top: 10px !important;
+        }
+
+        .filter-card .col-12.d-flex .btn {
+            flex: 1 1 auto;
+            min-width: 105px;
+        }
+
+        .employee-card .card-header {
+            padding: 15px;
+            gap: 10px;
+        }
+
+        .employee-card .card-header h5 {
+            font-size: 15px;
+        }
+
+        .employee-card .card-header .badge {
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table {
+            min-width: 700px;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 12px 10px;
+            font-size: 12px;
+        }
+
+        .employee-avatar {
+            width: 30px;
+            height: 30px;
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        .department-badge {
+            font-size: 11px;
+            padding: 5px 8px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            margin: 1px;
+        }
+
+        .pagination {
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .pagination .page-link {
+            margin: 0;
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+    }
+
+    /* SMALL MOBILE SCREENS */
+    @media (max-width: 400px) {
+        .page-header h2 {
+            font-size: 19px;
+        }
+
+        .page-header .header-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-modern {
+            width: 100%;
+        }
+
+        .filter-card .col-12.d-flex .btn {
+            min-width: 100%;
+        }
+
+        .employee-card .card-header {
+            align-items: flex-start !important;
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid employee-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div>
+            <h2>
+                <i class="bi bi-people-fill me-2"></i>
+                Employee Management
+            </h2>
+
+            <p>Search, filter, sort and manage your employees.</p>
+        </div>
+
+        <div class="header-buttons d-flex gap-2">
+
+            <a href="{% url 'import_employees' %}"
+               class="btn btn-success btn-modern">
+                <i class="bi bi-upload me-1"></i>
+                Import Employees
+            </a>
+
+            <a href="{% url 'add_employee' %}"
+               class="btn btn-primary btn-modern">
+                <i class="bi bi-plus-circle me-1"></i>
+                Add Employee
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH AND FILTER CARD -->
+    <div class="card filter-card">
+
+        <div class="card-body">
+
+            <h6 class="fw-bold mb-4">
+                <i class="bi bi-funnel me-2 text-primary"></i>
+                Search & Filter Employees
+            </h6>
+
+            <form method="GET" action="{% url 'employee_list' %}">
+
+                <div class="row g-3">
+
+                    <!-- SEARCH -->
+                    <div class="col-lg-3 col-md-6">
+
+                        <label class="form-label">Search Employee</label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            class="form-control"
+                            placeholder="Name or department"
+                            value="{{ search_query }}"
+                        >
+
+                    </div>
+
+
+                    <!-- DEPARTMENT -->
+                    <div class="col-lg-2 col-md-6">
+
+                        <label class="form-label">Department</label>
+
+                        <select name="department" class="form-select">
+
+                            <option value="">All Departments</option>
+
+                            {% for department in departments %}
+
+                                <option
+                                    value="{{ department.id }}"
+                                    {% if selected_department == department.id|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ department.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- MIN SALARY -->
+                    <div class="col-lg-2 col-md-6">
+
+                        <label class="form-label">Minimum Salary</label>
+
+                        <input
+                            type="number"
+                            name="min_salary"
+                            class="form-control"
+                            min="0"
+                            placeholder="Minimum"
+                            value="{{ min_salary }}"
+                        >
+
+                    </div>
+
+
+                    <!-- MAX SALARY -->
+                    <div class="col-lg-2 col-md-6">
+
+                        <label class="form-label">Maximum Salary</label>
+
+                        <input
+                            type="number"
+                            name="max_salary"
+                            class="form-control"
+                            min="0"
+                            placeholder="Maximum"
+                            value="{{ max_salary }}"
+                        >
+
+                    </div>
+
+
+                    <!-- SORTING -->
+                    <div class="col-lg-2 col-md-6">
+
+                        <label class="form-label">Sort By</label>
+
+                        <select name="sort" class="form-select">
+
+                            <option value="id"
+                                {% if sort_by == 'id' %}selected{% endif %}>
+                                Oldest First
+                            </option>
+
+                            <option value="-id"
+                                {% if sort_by == '-id' %}selected{% endif %}>
+                                Newest First
+                            </option>
+
+                            <option value="name"
+                                {% if sort_by == 'name' %}selected{% endif %}>
+                                Name A–Z
+                            </option>
+
+                            <option value="-name"
+                                {% if sort_by == '-name' %}selected{% endif %}>
+                                Name Z–A
+                            </option>
+
+                            <option value="salary"
+                                {% if sort_by == 'salary' %}selected{% endif %}>
+                                Salary Low–High
+                            </option>
+
+                            <option value="-salary"
+                                {% if sort_by == '-salary' %}selected{% endif %}>
+                                Salary High–Low
+                            </option>
+
+                            <option value="department"
+                                {% if sort_by == 'department' %}selected{% endif %}>
+                                Department A–Z
+                            </option>
+
+                            <option value="-department"
+                                {% if sort_by == '-department' %}selected{% endif %}>
+                                Department Z–A
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEARCH BUTTON -->
+                    <div class="col-lg-1 col-md-6 d-flex align-items-end">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 btn-modern">
+
+                            <i class="bi bi-search"></i>
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- EXPORT AND CLEAR BUTTONS -->
+                    <div class="col-12 d-flex flex-wrap gap-2 mt-4">
+
+                        <a href="{% url 'employee_list' %}"
+                           class="btn btn-outline-secondary btn-sm">
+
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Clear Filters
+
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            formaction="{% url 'export_employees_csv' %}"
+                            class="btn btn-outline-success btn-sm">
+
+                            <i class="bi bi-filetype-csv me-1"></i>
+                            Export CSV
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            formaction="{% url 'export_employees_excel' %}"
+                            class="btn btn-outline-primary btn-sm">
+
+                            <i class="bi bi-file-earmark-excel me-1"></i>
+                            Export Excel
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- EMPLOYEE TABLE -->
+    <div class="card employee-card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5>
+                <i class="bi bi-table me-2 text-primary"></i>
+                Employee List
+            </h5>
+
+            <span class="badge bg-primary-subtle text-primary px-3 py-2">
+                {{ employees.paginator.count }} Employees
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee Name</th>
+                            <th>Department</th>
+                            <th>Salary</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for employee in employees %}
+
+                            <tr>
+
+                                <!-- ID -->
+                                <td class="fw-semibold">
+                                    {{ forloop.counter0|add:employees.start_index }}
+                                </td>
+
+
+                                <!-- NAME -->
+                                <td>
+
+                                    <span class="employee-avatar">
+                                        {{ employee.name|first|upper }}
+                                    </span>
+
+                                    <span class="fw-semibold">
+                                        {{ employee.name }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- DEPARTMENT -->
+                                <td>
+
+                                    <span class="department-badge">
+                                        {{ employee.department.name }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- SALARY -->
+                                <td class="salary-text">
+                                    ₹{{ employee.salary }}
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td class="text-center">
+
+                                    <a
+                                        href="{% url 'employee_detail' employee.id %}"
+                                        class="btn btn-outline-info btn-sm action-btn"
+                                        title="View Employee">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+
+                                    <a
+                                        href="{% url 'edit_employee' employee.id %}"
+                                        class="btn btn-outline-primary btn-sm action-btn"
+                                        title="Edit Employee">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </a>
+
+
+                                    <a
+                                        href="{% url 'delete_employee' employee.id %}"
+                                        class="btn btn-outline-danger btn-sm action-btn"
+                                        title="Delete Employee">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="5" class="empty-state">
+
+                                    <i class="bi bi-people d-block mb-3"></i>
+
+                                    <h5>No Employees Found</h5>
+
+                                    <p class="mb-0">
+                                        Try changing your search or filter options.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- PAGINATION -->
+            {% if employees.has_other_pages %}
+
+                <nav aria-label="Employee pagination">
+
+                    <ul class="pagination justify-content-center mt-4">
+
+                        <!-- PREVIOUS -->
+                        {% if employees.has_previous %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="{% querystring page=employees.previous_page_number %}">
+
+                                    <i class="bi bi-chevron-left"></i>
+                                    Previous
+
+                                </a>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+
+                                <span class="page-link">
+                                    Previous
+                                </span>
+
+                            </li>
+
+                        {% endif %}
+
+
+                        <!-- CURRENT PAGE -->
+                        <li class="page-item active">
+
+                            <span class="page-link">
+                                Page {{ employees.number }}
+                                of {{ employees.paginator.num_pages }}
+                            </span>
+
+                        </li>
+
+
+                        <!-- NEXT -->
+                        {% if employees.has_next %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="{% querystring page=employees.next_page_number %}">
+
+                                    Next
+                                    <i class="bi bi-chevron-right"></i>
+
+                                </a>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+
+                                <span class="page-link">
+                                    Next
+                                </span>
+
+                            </li>
+
+                        {% endif %}
+
+                    </ul>
+
+                </nav>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

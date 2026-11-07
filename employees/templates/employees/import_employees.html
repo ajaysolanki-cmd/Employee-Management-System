@@ -1,0 +1,157 @@
+
+{% extends 'employees/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Heading -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Import Employees</h2>
+        <p class="text-muted">
+            Upload a CSV or Excel file to add multiple employees at once.
+        </p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-8">
+
+            <!-- Upload Card -->
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-cloud-upload me-2"></i>
+                        Upload Employee File
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST"
+                          enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Select File
+                            </label>
+
+                            {{ form.file }}
+
+                            {% for error in form.file.errors %}
+                                <div class="text-danger small mt-2">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Supported formats: CSV and Excel (.xlsx).
+                            Maximum file size: 5 MB.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i>
+                            Import Employees
+                        </button>
+
+                        <a href="{% url 'employee_list' %}"
+                           class="btn btn-outline-secondary ms-2">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- Import Errors -->
+            {% if import_errors %}
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white py-3">
+                        <h5 class="text-danger mb-0">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Import Errors
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <ul class="mb-0">
+                            {% for error in import_errors %}
+                                <li class="text-danger mb-2">
+                                    {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <!-- Instructions -->
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">
+                        File Format Instructions
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-muted">
+                        Your file must contain these three columns:
+                    </p>
+
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Employee Name</th>
+                                <th>Department</th>
+                                <th>Salary</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Ajay</td>
+                                <td>HR</td>
+                                <td>35000</td>
+                            </tr>
+
+                            <tr>
+                                <td>Rahul</td>
+                                <td>IT</td>
+                                <td>45000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert alert-warning small mb-0">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        Make sure the department names already exist
+                        in your Department section.
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

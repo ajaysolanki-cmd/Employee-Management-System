@@ -1,0 +1,95 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Performance Summary{% endblock %}
+
+{% block page_heading %}Performance Summary{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold">Employee Performance Summary</h3>
+            <p class="text-muted">View average performance ratings of employees.</p>
+        </div>
+
+        <a href="{% url 'performance_list' %}" class="btn btn-secondary">
+            Back to Reviews
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Average Rating</th>
+                            <th>Performance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for employee in employees %}
+
+                        <tr>
+                            <td>{{ employee.name }}</td>
+
+                            <td>{{ employee.department.name }}</td>
+
+                            <td>
+                                {% if employee.average_rating is not None %}
+                                    {{ employee.average_rating|floatformat:2 }} / 5
+                                {% else %}
+                                    Not Reviewed
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if employee.average_rating is None %}
+                                    <span class="badge bg-secondary">No Reviews</span>
+                                {% elif employee.average_rating >= 4 %}
+                                    <span class="badge bg-success">Excellent</span>
+                                {% elif employee.average_rating >= 3 %}
+                                    <span class="badge bg-primary">Good</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Needs Improvement</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="{% url 'employee_performance_history' employee.id %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View History
+                                </a>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No employees found.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

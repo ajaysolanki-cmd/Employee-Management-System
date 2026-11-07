@@ -1,0 +1,114 @@
+
+{% extends 'employees/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Apply for Leave</h2>
+        <p class="text-muted">
+            Submit a leave application for an employee.
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        Leave Application Details
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Employee
+                            </label>
+                            {{ form.employee }}
+
+                            {% for error in form.employee.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Start Date
+                                </label>
+                                {{ form.start_date }}
+
+                                {% for error in form.start_date.errors %}
+                                    <div class="text-danger small">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    End Date
+                                </label>
+                                {{ form.end_date }}
+
+                                {% for error in form.end_date.errors %}
+                                    <div class="text-danger small">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Reason for Leave
+                            </label>
+                            {{ form.reason }}
+
+                            {% for error in form.reason.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>
+                            Submit Application
+                        </button>
+
+                        <a href="{% url 'leave_list' %}"
+                           class="btn btn-outline-secondary ms-2">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends 'employees/base.html' %}
+
+{% block content %}
+
+<style>
+    .performance-page {
+        padding: 10px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .page-header h2 {
+        font-weight: 700;
+        color: #263238;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: #78909c;
+        font-size: 14px;
+    }
+
+    .performance-count {
+        background: #e8f0fe;
+        color: #2563eb;
+        padding: 6px 13px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .performance-card {
+        background: white;
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .performance-card-header {
+        padding: 20px;
+        border-bottom: 1px solid #edf0f2;
+    }
+
+    .performance-card-header h5 {
+        font-weight: 700;
+        margin: 0;
+        color: #263238;
+    }
+
+    .table {
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 16px;
+        border-bottom: 1px solid #edf0f2;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 17px 16px;
+        color: #475569;
+        font-size: 14px;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: #263238;
+    }
+
+    .department-badge {
+        background: #eef2ff;
+        color: #4f46e5;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .rating-badge {
+        display: inline-block;
+        background: #ecfdf5;
+        color: #059669;
+        padding: 6px 11px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .feedback-text {
+        max-width: 280px;
+        line-height: 1.5;
+        color: #64748b;
+    }
+
+    .review-date {
+        font-weight: 500;
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 55px 20px !important;
+        text-align: center;
+        color: #94a3b8 !important;
+    }
+
+    .empty-state h5 {
+        color: #475569;
+        margin-top: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            align-items: flex-start;
+        }
+
+        .page-header .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid performance-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+
+        <div>
+            <h2>Employee Performance</h2>
+
+            <p class="page-subtitle">
+                Monitor employee performance and review feedback.
+            </p>
+        </div>
+
+        <a href="{% url 'add_performance' %}"
+           class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Add Performance Review
+        </a>
+
+    </div>
+
+    <!-- Performance Card -->
+    <div class="performance-card">
+
+        <div class="performance-card-header d-flex justify-content-between align-items-center">
+
+            <h5>
+                <i class="bi bi-graph-up-arrow me-2 text-primary"></i>
+                Performance Reviews
+            </h5>
+
+            <span class="performance-count">
+                {{ performances|length }} Reviews
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Rating</th>
+                        <th>Feedback</th>
+                        <th>Review Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for performance in performances %}
+
+                    <tr>
+
+                        <td>
+                            <div class="employee-name">
+                                <i class="bi bi-person-circle me-2 text-secondary"></i>
+                                {{ performance.employee.name }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="department-badge">
+                                {{ performance.employee.department.name }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="rating-badge">
+                                <i class="bi bi-star-fill me-1"></i>
+                                {{ performance.get_rating_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="feedback-text">
+                                {{ performance.feedback|default:"No feedback provided"|truncatechars:100 }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="review-date">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                {{ performance.review_date|date:"d M Y" }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="empty-state">
+
+                            <i class="bi bi-clipboard-data"
+                               style="font-size: 40px;"></i>
+
+                            <h5>No Performance Reviews Found</h5>
+
+                            <p class="mb-3">
+                                Start by adding a performance review for an employee.
+                            </p>
+
+                            <a href="{% url 'add_performance' %}"
+                               class="btn btn-primary btn-sm">
+                                Add First Review
+                            </a>
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

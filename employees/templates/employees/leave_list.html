@@ -1,0 +1,581 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Leave Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .leave-page {
+        padding: 5px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        color: #172554;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .page-header p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .modern-btn {
+        padding: 10px 17px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .filter-card,
+    .leave-card {
+        border: none;
+        border-radius: 14px;
+        background: white;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .filter-card .card-body {
+        padding: 25px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .form-control,
+    .form-select {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border-color: #e2e8f0;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    .leave-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 25px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .leave-card .card-header h5 {
+        color: #172554;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .leave-card .card-body {
+        padding: 20px 25px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 15px;
+        white-space: nowrap;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: #172554;
+    }
+
+    .employee-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #dbeafe;
+        color: #2563eb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 9px;
+    }
+
+    .department-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-approved {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .date-text {
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .reason-text {
+        max-width: 180px;
+        color: #64748b;
+    }
+
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    .record-count {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 7px 13px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        padding: 45px 15px !important;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 45px;
+        color: #94a3b8;
+    }
+
+    @media (max-width: 768px) {
+        .filter-card .card-body,
+        .leave-card .card-body {
+            padding: 15px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid leave-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div>
+            <h2>
+                <i class="bi bi-calendar2-week me-2"></i>
+                Leave Management
+            </h2>
+
+            <p>
+                Manage and review employee leave applications.
+            </p>
+        </div>
+
+        <a href="{% url 'apply_leave' %}"
+           class="btn btn-primary modern-btn">
+
+            <i class="bi bi-plus-circle me-1"></i>
+            Apply for Leave
+
+        </a>
+
+    </div>
+
+
+    <!-- FILTER CARD -->
+    <div class="card filter-card">
+
+        <div class="card-body">
+
+            <h6 class="fw-bold mb-4">
+                <i class="bi bi-funnel me-2 text-primary"></i>
+                Search & Filter Leave Applications
+            </h6>
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <!-- EMPLOYEE SEARCH -->
+                    <div class="col-lg-5 col-md-6">
+
+                        <label class="form-label">
+                            Search Employee
+                        </label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            class="form-control"
+                            placeholder="Enter employee name..."
+                            value="{{ search_query }}"
+                        >
+
+                    </div>
+
+
+                    <!-- STATUS FILTER -->
+                    <div class="col-lg-4 col-md-6">
+
+                        <label class="form-label">
+                            Leave Status
+                        </label>
+
+                        <select name="status" class="form-select">
+
+                            <option value="">All Statuses</option>
+
+                            <option value="Pending"
+                                {% if selected_status == 'Pending' %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                            <option value="Approved"
+                                {% if selected_status == 'Approved' %}selected{% endif %}>
+                                Approved
+                            </option>
+
+                            <option value="Rejected"
+                                {% if selected_status == 'Rejected' %}selected{% endif %}>
+                                Rejected
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEARCH BUTTON -->
+                    <div class="col-lg-3 col-md-12 d-flex align-items-end">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 modern-btn">
+
+                            <i class="bi bi-search me-1"></i>
+                            Search
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- CLEAR FILTER -->
+                    <div class="col-12">
+
+                        <a href="{% url 'leave_list' %}"
+                           class="btn btn-outline-secondary btn-sm">
+
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Clear Filters
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- LEAVE APPLICATION TABLE -->
+    <div class="card leave-card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5>
+                <i class="bi bi-table me-2 text-primary"></i>
+                Leave Applications
+            </h5>
+
+            <span class="record-count">
+                {{ leave_requests|length }} Applications
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for leave in leave_requests %}
+
+                            <tr>
+
+                                <!-- ID -->
+                                <td class="fw-semibold">
+                                    #{{ leave.id }}
+                                </td>
+
+
+                                <!-- EMPLOYEE -->
+                                <td>
+
+                                    <span class="employee-avatar">
+                                        {{ leave.employee.name|first|upper }}
+                                    </span>
+
+                                    <span class="employee-name">
+                                        {{ leave.employee.name }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- DEPARTMENT -->
+                                <td>
+
+                                    <span class="department-badge">
+                                        {{ leave.employee.department.name }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- START DATE -->
+                                <td class="date-text">
+
+                                    <i class="bi bi-calendar3 me-1 text-muted"></i>
+
+                                    {{ leave.start_date|date:"d M Y" }}
+
+                                </td>
+
+
+                                <!-- END DATE -->
+                                <td class="date-text">
+
+                                    <i class="bi bi-calendar-check me-1 text-muted"></i>
+
+                                    {{ leave.end_date|date:"d M Y" }}
+
+                                </td>
+
+
+                                <!-- REASON -->
+                                <td>
+
+                                    <span class="reason-text"
+                                          title="{{ leave.reason }}">
+
+                                        {{ leave.reason|truncatechars:35 }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    {% if leave.status == 'Pending' %}
+
+                                        <span class="status-badge status-pending">
+                                            <i class="bi bi-clock-fill me-1"></i>
+                                            Pending
+                                        </span>
+
+                                    {% elif leave.status == 'Approved' %}
+
+                                        <span class="status-badge status-approved">
+                                            <i class="bi bi-check-circle-fill me-1"></i>
+                                            Approved
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status-badge status-rejected">
+                                            <i class="bi bi-x-circle-fill me-1"></i>
+                                            Rejected
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td>
+
+                                    {% if leave.status == 'Pending' %}
+
+                                        <div class="d-flex gap-2">
+
+                                            <!-- APPROVE -->
+                                            <form method="POST"
+                                                  action="{% url 'update_leave_status' leave.id 'Approved' %}">
+
+                                                {% csrf_token %}
+
+                                                <button type="submit"
+                                                        class="btn btn-outline-success btn-sm action-btn"
+                                                        title="Approve Leave"
+                                                        onclick="return confirm('Approve this leave request?')">
+
+                                                    <i class="bi bi-check-lg"></i>
+
+                                                </button>
+
+                                            </form>
+
+
+                                            <!-- REJECT -->
+                                            <form method="POST"
+                                                  action="{% url 'update_leave_status' leave.id 'Rejected' %}">
+
+                                                {% csrf_token %}
+
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-sm action-btn"
+                                                        title="Reject Leave"
+                                                        onclick="return confirm('Reject this leave request?')">
+
+                                                    <i class="bi bi-x-lg"></i>
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    {% else %}
+
+                                        <span class="text-muted small">
+                                            <i class="bi bi-check2-all me-1"></i>
+                                            Reviewed
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="8" class="empty-state">
+
+                                    <i class="bi bi-calendar-x d-block mb-3"></i>
+
+                                    <h5>No Leave Applications Found</h5>
+
+                                    <p class="mb-0">
+                                        Try changing your search or filter options.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- TOTAL RECORDS -->
+            <div class="mt-4">
+
+                <span class="text-muted small">
+                    Total applications:
+                    <strong>{{ leave_requests|length }}</strong>
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

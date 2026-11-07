@@ -1,0 +1,120 @@
+
+{% extends 'employees/base.html' %}
+
+{% block title %}My Profile | EMS{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+        <h3 class="fw-bold">My Profile</h3>
+        <p class="text-muted">
+            View your account information.
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <div class="text-center mb-4">
+
+                        <div class="rounded-circle bg-primary text-white
+                                    d-flex align-items-center justify-content-center
+                                    mx-auto mb-3"
+                             style="width: 90px; height: 90px;
+                                    font-size: 35px;">
+
+                            {{ user.username|first|upper }}
+
+                        </div>
+
+                        <h4 class="fw-bold">
+                            {{ user.username }}
+                        </h4>
+
+                        <span class="badge bg-success">
+                            Active User
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">
+                            Username
+                        </label>
+                        <h6>{{ user.username }}</h6>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">
+                            Email Address
+                        </label>
+                        <h6>
+                            {{ user.email|default:"Not provided" }}
+                        </h6>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">
+                            First Name
+                        </label>
+                        <h6>
+                            {{ user.first_name|default:"Not provided" }}
+                        </h6>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">
+                            Last Name
+                        </label>
+                        <h6>
+                            {{ user.last_name|default:"Not provided" }}
+                        </h6>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">
+                            Account Type
+                        </label>
+                        <h6>
+                            {% if user.is_superuser %}
+                                Superuser
+                            {% elif user.is_staff %}
+                                Staff
+                            {% else %}
+                                Regular User
+                            {% endif %}
+                        </h6>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">
+                            Date Joined
+                        </label>
+                        <h6>
+                            {{ user.date_joined|date:"d M Y" }}
+                        </h6>
+                    </div>
+
+                    <hr>
+
+                    <a href="{% url 'home' %}"
+                       class="btn btn-primary">
+                        Back to Dashboard
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

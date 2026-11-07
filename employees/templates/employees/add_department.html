@@ -1,0 +1,49 @@
+
+{% extends 'employees/base.html' %}
+
+{% block title %}Add Department | EMS{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+        <h3 class="fw-bold">Add Department</h3>
+        <p class="text-muted">Create a new department.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Department Name</label>
+
+                    {{ form.name }}
+
+                    {% for error in form.name.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Department
+                </button>
+
+                <a href="{% url 'department_list' %}"
+                   class="btn btn-light ms-2">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

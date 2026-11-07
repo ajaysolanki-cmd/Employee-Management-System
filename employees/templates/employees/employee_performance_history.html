@@ -1,0 +1,109 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Employee Performance History{% endblock %}
+
+{% block page_heading %}Performance History{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold">{{ employee.name }}</h3>
+            <p class="text-muted mb-0">
+                Department: {{ employee.department.name }}
+            </p>
+        </div>
+
+        <a href="{% url 'performance_summary' %}"
+           class="btn btn-secondary">
+            Back to Summary
+        </a>
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted">Average Rating</h6>
+
+                    <h2 class="fw-bold text-primary">
+                        {% if average_rating is not None %}
+                            {{ average_rating|floatformat:2 }} / 5
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Reviews</h6>
+
+                    <h2 class="fw-bold text-success">
+                        {{ performances|length }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">Performance History</h5>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Review Date</th>
+                            <th>Rating</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for performance in performances %}
+
+                        <tr>
+                            <td>{{ performance.review_date }}</td>
+
+                            <td>{{ performance.get_rating_display }}</td>
+
+                            <td>{{ performance.feedback }}</td>
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                No performance history available.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

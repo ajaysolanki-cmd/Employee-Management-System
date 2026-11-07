@@ -1,0 +1,631 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Dashboard | EMS{% endblock %}
+
+{% block page_heading %}Dashboard Overview{% endblock %}
+
+{% block content %}
+
+<style>
+    /* MAIN DASHBOARD */
+
+    .dashboard-container {
+        padding: 15px 10px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* WELCOME SECTION */
+
+    .welcome-section {
+        background: linear-gradient(120deg, #2563eb, #4f46e5);
+        color: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+    }
+
+    .welcome-section h3 {
+        font-weight: 700;
+        font-size: 25px;
+    }
+
+    .welcome-section p {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    /* STATISTICS CARDS */
+
+    .stat-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12) !important;
+    }
+
+    .stat-card .card-body {
+        padding: 24px;
+    }
+
+    .stat-icon {
+        width: 55px;
+        height: 55px;
+        min-width: 55px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+    }
+
+    .icon-blue {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .icon-green {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .icon-yellow {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .icon-red {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .stat-value {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    /* CHART CARDS */
+
+    .chart-card {
+        border: none;
+        border-radius: 16px;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .chart-card .card-body {
+        padding: 25px;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 320px;
+        width: 100%;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 18px;
+    }
+
+    /* TABLET RESPONSIVENESS */
+
+    @media (max-width: 992px) {
+
+        .dashboard-container {
+            padding: 10px 5px;
+        }
+
+        .welcome-section {
+            padding: 25px;
+        }
+
+        .stat-card .card-body {
+            padding: 20px;
+        }
+
+        .chart-card .card-body {
+            padding: 20px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+    }
+
+    /* MOBILE RESPONSIVENESS */
+
+    @media (max-width: 768px) {
+
+        .dashboard-container {
+            padding: 8px 3px;
+        }
+
+        .welcome-section {
+            padding: 22px 18px;
+            margin-bottom: 20px;
+            border-radius: 13px;
+        }
+
+        .welcome-section h3 {
+            font-size: 21px;
+            line-height: 1.4;
+        }
+
+        .welcome-section p {
+            font-size: 13px;
+        }
+
+        .stat-card {
+            border-radius: 13px;
+        }
+
+        .stat-card .card-body {
+            padding: 17px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            min-width: 45px;
+            height: 45px;
+            font-size: 21px;
+            border-radius: 11px;
+        }
+
+        .chart-card .card-body {
+            padding: 17px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            margin-bottom: 18px !important;
+        }
+
+        .chart-container {
+            height: 270px;
+        }
+    }
+
+    /* SMALL MOBILE SCREENS */
+
+    @media (max-width: 400px) {
+
+        .welcome-section {
+            padding: 18px 15px;
+        }
+
+        .welcome-section h3 {
+            font-size: 18px;
+        }
+
+        .stat-card .card-body {
+            padding: 13px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+        }
+
+        .stat-value {
+            font-size: 19px;
+        }
+
+        .stat-icon {
+            width: 38px;
+            min-width: 38px;
+            height: 38px;
+            font-size: 18px;
+        }
+
+        .chart-container {
+            height: 240px;
+        }
+
+        .chart-card .card-body {
+            padding: 14px;
+        }
+    }
+</style>
+
+
+<div class="container-fluid dashboard-container">
+
+    <!-- WELCOME SECTION -->
+
+    <div class="welcome-section shadow-sm">
+
+        <h3>
+            Welcome back, {{ request.user.username }}! 👋
+        </h3>
+
+        <p class="mb-0 opacity-75">
+            Here's what's happening in your Employee Management System today.
+        </p>
+
+    </div>
+
+
+    <!-- STATISTICS CARDS -->
+
+    <div class="row g-3 g-md-4 mb-4">
+
+        <!-- TOTAL EMPLOYEES -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card stat-card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="overflow-hidden">
+                            <div class="stat-label">
+                                Total Employees
+                            </div>
+
+                            <div class="stat-value">
+                                {{ total_employees }}
+                            </div>
+                        </div>
+
+                        <div class="stat-icon icon-blue">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DEPARTMENTS -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card stat-card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="overflow-hidden">
+                            <div class="stat-label">
+                                Departments
+                            </div>
+
+                            <div class="stat-value">
+                                {{ total_departments }}
+                            </div>
+                        </div>
+
+                        <div class="stat-icon icon-green">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- AVERAGE SALARY -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card stat-card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="overflow-hidden">
+                            <div class="stat-label">
+                                Average Salary
+                            </div>
+
+                            <div class="stat-value">
+                                ₹{{ average_salary|floatformat:2 }}
+                            </div>
+                        </div>
+
+                        <div class="stat-icon icon-yellow">
+                            <i class="bi bi-currency-rupee"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- HIGHEST SALARY -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card stat-card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="overflow-hidden">
+                            <div class="stat-label">
+                                Highest Salary
+                            </div>
+
+                            <div class="stat-value">
+                                ₹{{ highest_salary }}
+                            </div>
+                        </div>
+
+                        <div class="stat-icon icon-red">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHARTS SECTION -->
+
+    <div class="row g-3 g-md-4">
+
+        <!-- DEPARTMENT CHART -->
+
+        <div class="col-12 col-lg-6">
+
+            <div class="card chart-card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="section-title mb-4">
+
+                        <i class="bi bi-pie-chart-fill text-primary me-2"></i>
+
+                        Department-wise Employees
+
+                    </h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="departmentChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SALARY CHART -->
+
+        <div class="col-12 col-lg-6">
+
+            <div class="card chart-card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="section-title mb-4">
+
+                        <i class="bi bi-bar-chart-fill text-success me-2"></i>
+
+                        Employee Salary Distribution
+
+                    </h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="salaryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- DJANGO DATA -->
+
+{{ department_labels|json_script:"department-labels" }}
+{{ department_counts|json_script:"department-counts" }}
+
+{{ salary_labels|json_script:"salary-labels" }}
+{{ salary_counts|json_script:"salary-counts" }}
+
+
+<!-- CHART.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+    // DEPARTMENT CHART
+
+    const departmentLabels = JSON.parse(
+        document.getElementById('department-labels').textContent
+    );
+
+    const departmentCounts = JSON.parse(
+        document.getElementById('department-counts').textContent
+    );
+
+    new Chart(document.getElementById('departmentChart'), {
+
+        type: 'doughnut',
+
+        data: {
+
+            labels: departmentLabels,
+
+            datasets: [{
+
+                label: 'Employees',
+
+                data: departmentCounts,
+
+                borderWidth: 2,
+
+                hoverOffset: 10
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+
+                    position: window.innerWidth < 576 ? 'bottom' : 'bottom',
+
+                    labels: {
+
+                        padding: 15,
+
+                        usePointStyle: true,
+
+                        font: {
+                            size: 12
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    // SALARY CHART
+
+    const salaryLabels = JSON.parse(
+        document.getElementById('salary-labels').textContent
+    );
+
+    const salaryCounts = JSON.parse(
+        document.getElementById('salary-counts').textContent
+    );
+
+    new Chart(document.getElementById('salaryChart'), {
+
+        type: 'bar',
+
+        data: {
+
+            labels: salaryLabels,
+
+            datasets: [{
+
+                label: 'Employees',
+
+                data: salaryCounts,
+
+                borderWidth: 1,
+
+                borderRadius: 6
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
+
+            scales: {
+
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 0
+                    }
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+                        precision: 0
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,146 @@
+
+{% extends 'employees/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Mark Attendance</h2>
+        <p class="text-muted">
+            Record attendance for an employee.
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        Attendance Details
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Employee
+                            </label>
+
+                            {{ form.employee }}
+
+                            {% for error in form.employee.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Attendance Date
+                            </label>
+
+                            {{ form.date }}
+
+                            {% for error in form.date.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Attendance Status
+                            </label>
+
+                            {{ form.status }}
+
+                            {% for error in form.status.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Check In
+                                </label>
+
+                                {{ form.check_in }}
+
+                                {% for error in form.check_in.errors %}
+                                    <div class="text-danger small">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">
+                                    Check Out
+                                </label>
+
+                                {{ form.check_out }}
+
+                                {% for error in form.check_out.errors %}
+                                    <div class="text-danger small">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Remarks
+                            </label>
+
+                            {{ form.remarks }}
+
+                            {% for error in form.remarks.errors %}
+                                <div class="text-danger small">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Save Attendance
+                        </button>
+
+                        <a href="{% url 'attendance_list' %}"
+                           class="btn btn-outline-secondary ms-2">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

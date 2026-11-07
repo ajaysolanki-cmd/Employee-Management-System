@@ -1,0 +1,21 @@
+body {
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #212529;
+    font-weight: bold;
+}
+
+.container {
+    margin-top: 40px;
+}
+
+.table {
+    background-color: white;
+}
+
+.btn {
+    border-radius: 5px;
+}

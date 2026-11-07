@@ -1,0 +1,49 @@
+{% extends 'employees/base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Add Performance Review</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% for error in field.errors %}
+                            <div class="text-danger">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">
+                    Save Review
+                </button>
+
+                <a href="{% url 'performance_list' %}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

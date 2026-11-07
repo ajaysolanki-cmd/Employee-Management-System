@@ -1,0 +1,520 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Attendance Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attendance-page {
+        padding: 5px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .page-header h2 {
+        color: #172554;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .page-header p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .modern-btn {
+        padding: 10px 17px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .filter-card,
+    .attendance-card {
+        border: none;
+        border-radius: 14px;
+        background: white;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .filter-card .card-body {
+        padding: 25px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .form-control,
+    .form-select {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border-color: #e2e8f0;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    .attendance-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 25px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .attendance-card .card-header h5 {
+        color: #172554;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .attendance-card .card-body {
+        padding: 20px 25px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 15px;
+        white-space: nowrap;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: #172554;
+    }
+
+    .employee-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #dbeafe;
+        color: #2563eb;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 9px;
+    }
+
+    .department-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-present {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-absent {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .status-leave {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .time-text {
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .record-count {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 7px 13px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        padding: 45px 15px !important;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .empty-state i {
+        font-size: 45px;
+        color: #94a3b8;
+    }
+
+    @media (max-width: 768px) {
+        .filter-card .card-body,
+        .attendance-card .card-body {
+            padding: 15px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid attendance-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div>
+            <h2>
+                <i class="bi bi-calendar-check me-2"></i>
+                Attendance Management
+            </h2>
+
+            <p>
+                View and manage employee attendance records.
+            </p>
+        </div>
+
+        <a href="{% url 'mark_attendance' %}"
+           class="btn btn-primary modern-btn">
+
+            <i class="bi bi-plus-circle me-1"></i>
+            Mark Attendance
+
+        </a>
+
+    </div>
+
+
+    <!-- FILTER CARD -->
+    <div class="card filter-card">
+
+        <div class="card-body">
+
+            <h6 class="fw-bold mb-4">
+                <i class="bi bi-funnel me-2 text-primary"></i>
+                Search & Filter Attendance
+            </h6>
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <!-- EMPLOYEE SEARCH -->
+                    <div class="col-lg-4 col-md-6">
+
+                        <label class="form-label">
+                            Employee Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            class="form-control"
+                            placeholder="Search employee..."
+                            value="{{ search_query }}"
+                        >
+
+                    </div>
+
+
+                    <!-- DATE FILTER -->
+                    <div class="col-lg-3 col-md-6">
+
+                        <label class="form-label">
+                            Attendance Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date"
+                            class="form-control"
+                            value="{{ selected_date }}"
+                        >
+
+                    </div>
+
+
+                    <!-- STATUS FILTER -->
+                    <div class="col-lg-3 col-md-6">
+
+                        <label class="form-label">
+                            Attendance Status
+                        </label>
+
+                        <select name="status" class="form-select">
+
+                            <option value="">All Statuses</option>
+
+                            <option value="Present"
+                                {% if selected_status == 'Present' %}selected{% endif %}>
+                                Present
+                            </option>
+
+                            <option value="Absent"
+                                {% if selected_status == 'Absent' %}selected{% endif %}>
+                                Absent
+                            </option>
+
+                            <option value="On Leave"
+                                {% if selected_status == 'On Leave' %}selected{% endif %}>
+                                On Leave
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEARCH BUTTON -->
+                    <div class="col-lg-2 col-md-6 d-flex align-items-end">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 modern-btn">
+
+                            <i class="bi bi-search me-1"></i>
+                            Search
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- CLEAR FILTER -->
+                    <div class="col-12">
+
+                        <a href="{% url 'attendance_list' %}"
+                           class="btn btn-outline-secondary btn-sm">
+
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Clear Filters
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ATTENDANCE TABLE -->
+    <div class="card attendance-card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <h5>
+                <i class="bi bi-table me-2 text-primary"></i>
+                Attendance Records
+            </h5>
+
+            <span class="record-count">
+                {{ attendance_records|length }} Records
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for record in attendance_records %}
+
+                            <tr>
+
+                                <!-- ID -->
+                                <td class="fw-semibold">
+                                    #{{ record.id }}
+                                </td>
+
+
+                                <!-- EMPLOYEE -->
+                                <td>
+
+                                    <span class="employee-avatar">
+                                        {{ record.employee.name|first|upper }}
+                                    </span>
+
+                                    <span class="employee-name">
+                                        {{ record.employee.name }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- DEPARTMENT -->
+                                <td>
+
+                                    <span class="department-badge">
+                                        {{ record.employee.department.name }}
+                                    </span>
+
+                                </td>
+
+
+                                <!-- DATE -->
+                                <td>
+                                    <i class="bi bi-calendar3 me-1 text-muted"></i>
+                                    {{ record.date|date:"d M Y" }}
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    {% if record.status == 'Present' %}
+
+                                        <span class="status-badge status-present">
+                                            <i class="bi bi-check-circle-fill me-1"></i>
+                                            Present
+                                        </span>
+
+                                    {% elif record.status == 'Absent' %}
+
+                                        <span class="status-badge status-absent">
+                                            <i class="bi bi-x-circle-fill me-1"></i>
+                                            Absent
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status-badge status-leave">
+                                            <i class="bi bi-calendar-minus-fill me-1"></i>
+                                            On Leave
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- CHECK IN -->
+                                <td class="time-text">
+
+                                    <i class="bi bi-box-arrow-in-right me-1 text-success"></i>
+
+                                    {{ record.check_in|default:"-" }}
+
+                                </td>
+
+
+                                <!-- CHECK OUT -->
+                                <td class="time-text">
+
+                                    <i class="bi bi-box-arrow-right me-1 text-danger"></i>
+
+                                    {{ record.check_out|default:"-" }}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="7" class="empty-state">
+
+                                    <i class="bi bi-calendar-x d-block mb-3"></i>
+
+                                    <h5>No Attendance Records Found</h5>
+
+                                    <p class="mb-0">
+                                        Try changing your search or filter options.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- RECORD COUNT -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+
+                <span class="text-muted small">
+                    Total attendance records:
+                    <strong>{{ attendance_records|length }}</strong>
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
